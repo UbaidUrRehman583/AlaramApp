@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -37,7 +38,6 @@ import com.app.alaramapp.data.WeekDay
 fun HomeScreenItem(
     alarm: AlarmEntity,
     timeFormat24Hour: Boolean,
-   // clockStyle: String,
     onToggle: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -54,38 +54,50 @@ fun HomeScreenItem(
         }
     }
 
-    Row(
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        tonalElevation = 2.dp,
+        shape = MaterialTheme.shapes.medium,
+        color = MaterialTheme.colorScheme.surface
     ) {
-        Column(modifier = Modifier.weight(1f)) {
-            //  Conditionally display digital or analog
-            Text(
-                text = time,
-                style = MaterialTheme.typography.headlineLarge
-            )
-
-            /*if (clockStyle == "Digital") {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = time,
-                    style = MaterialTheme.typography.headlineLarge
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-            } else {
-                AnalogClock(hour = alarm.hour, minute = alarm.minute)
-            }*/
 
-            Text(
-                text = alarm.daysOfWeek.joinToString(", ") { it.displayName },
-                style = MaterialTheme.typography.bodySmall
+                Text(
+                    text = alarm.daysOfWeek.joinToString(", ") { it.displayName },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Switch(
+                checked = alarm.isEnabled,
+                onCheckedChange = { onToggle() },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = MaterialTheme.colorScheme.primary,
+                    uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             )
-        }
 
-        Switch(checked = alarm.isEnabled, onCheckedChange = { onToggle() })
-
-        IconButton(onClick = onDelete) {
-            Icon(Icons.Default.Delete, contentDescription = "Delete Alarm")
+            IconButton(onClick = onDelete) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete Alarm",
+                    tint = MaterialTheme.colorScheme.error
+                )
+            }
         }
     }
 }

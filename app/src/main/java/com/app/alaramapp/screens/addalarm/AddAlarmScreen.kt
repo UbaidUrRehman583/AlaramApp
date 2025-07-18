@@ -2,6 +2,7 @@ package com.app.alaramapp.screens.addalarm
 
 
  import android.content.res.Configuration
+ import androidx.compose.foundation.background
  import androidx.compose.foundation.clickable
  import androidx.compose.foundation.layout.Arrangement
  import androidx.compose.foundation.layout.PaddingValues
@@ -19,8 +20,10 @@ package com.app.alaramapp.screens.addalarm
  import androidx.compose.material3.Button
  import androidx.compose.material3.ButtonDefaults
  import androidx.compose.material3.Checkbox
+ import androidx.compose.material3.CheckboxDefaults
  import androidx.compose.material3.ExperimentalMaterial3Api
  import androidx.compose.material3.MaterialTheme
+ import androidx.compose.material3.Surface
  import androidx.compose.material3.Text
  import androidx.compose.material3.TimePicker
  import androidx.compose.material3.TimePickerDefaults
@@ -32,12 +35,14 @@ package com.app.alaramapp.screens.addalarm
  import androidx.compose.runtime.snapshots.SnapshotStateList
  import androidx.compose.ui.Alignment
  import androidx.compose.ui.Modifier
+ import androidx.compose.ui.draw.clip
  import androidx.compose.ui.platform.LocalContext
  import androidx.compose.ui.tooling.preview.Preview
  import androidx.compose.ui.unit.dp
  import androidx.hilt.navigation.compose.hiltViewModel
  import com.app.alaramapp.data.AlarmEntity
  import com.app.alaramapp.data.WeekDay
+ import com.app.alaramapp.ui.theme.AlaramAppTheme
 
 @Composable
 fun AlarmScreenNavigation(
@@ -73,57 +78,71 @@ fun AddAlarmScreen(
     val formattedHour = if (hour % 12 == 0) 12 else hour % 12
     val formattedTime = "${formattedHour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} $amPm"
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        item {
-            TimePicker(
-                state = timePickerState,
-                modifier = Modifier.fillMaxWidth(),
-                colors = TimePickerDefaults.colors(),
-                layoutType = TimePickerLayoutType.Vertical,
-            )
-        }
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item {
+                TimePicker(
+                    state = timePickerState,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = TimePickerDefaults.colors(
+                        clockDialColor = MaterialTheme.colorScheme.surface,
+                        clockDialSelectedContentColor = MaterialTheme.colorScheme.onPrimary,
+                        selectorColor = MaterialTheme.colorScheme.primary
+                    ),
+                    layoutType = TimePickerLayoutType.Vertical,
+                )
+            }
 
-        item {
-            Text("Repeat On:", style = MaterialTheme.typography.titleMedium)
-        }
+            item {
+                Text(
+                    "Repeat On:",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
 
-        item {
-            WeekDayGrid(selectedDays)
-        }
+            item {
+                WeekDayGrid(selectedDays)
+            }
 
-        item {
-            Spacer(modifier = Modifier.height(24.dp))
-        }
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+            }
 
-        item {
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                shape = MaterialTheme.shapes.large,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                ),
-                enabled = if (formattedTime.isNotEmpty()) true else false,
-                onClick = {
-                    val alarm = AlarmEntity(
-                        id = 0,
-                        hour = timePickerState.hour,
-                        minute = timePickerState.minute,
-                        isEnabled = true,
-                        isRepeating = selectedDays.isNotEmpty(),
-                        daysOfWeek = selectedDays.toList()
-                    )
-                    onAddAlarm(alarm)
-                    onBack()
+            item {
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    shape = MaterialTheme.shapes.large,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    enabled = formattedTime.isNotEmpty(),
+                    onClick = {
+                        val alarm = AlarmEntity(
+                            id = 0,
+                            hour = timePickerState.hour,
+                            minute = timePickerState.minute,
+                            isEnabled = true,
+                            isRepeating = selectedDays.isNotEmpty(),
+                            daysOfWeek = selectedDays.toList()
+                        )
+                        onAddAlarm(alarm)
+                        onBack()
+                    }
+                ) {
+                    Text("Save Alarm")
                 }
-            ) {
-                Text("Save Alarm")
             }
         }
     }
@@ -134,7 +153,7 @@ fun WeekDayGrid(selectedDays: SnapshotStateList<WeekDay>) {
         columns = GridCells.Fixed(2),
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(max = 250.dp), // allow space for all items
+            .heightIn(max = 250.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(8.dp)
@@ -146,21 +165,31 @@ fun WeekDayGrid(selectedDays: SnapshotStateList<WeekDay>) {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clip(MaterialTheme.shapes.medium)
                     .clickable {
                         if (isSelected) selectedDays.remove(day) else selectedDays.add(day)
                     }
-                    .padding(4.dp)
+                    .background(
+                        if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                        else MaterialTheme.colorScheme.surface
+                    )
+                    .padding(8.dp)
             ) {
                 Checkbox(
                     checked = isSelected,
                     onCheckedChange = {
                         if (it) selectedDays.add(day) else selectedDays.remove(day)
-                    }
+                    },
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = MaterialTheme.colorScheme.primary,
+                        uncheckedColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 )
                 Text(
                     text = day.name,
                     modifier = Modifier.padding(start = 4.dp),
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -172,6 +201,8 @@ fun WeekDayGrid(selectedDays: SnapshotStateList<WeekDay>) {
 @Composable
 @Preview
 fun AddAlarmPreview() {
-    AddAlarmScreen(onAddAlarm = {}, onBack = {})
+    AlaramAppTheme {
+        AddAlarmScreen(onAddAlarm = {}, onBack = {})
+    }
 
 }

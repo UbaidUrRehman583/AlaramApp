@@ -1,5 +1,7 @@
 package com.app.alaramapp.screens.home
 
+import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -21,6 +23,7 @@ import com.app.alaramapp.data.AlarmEntity
 import com.app.alaramapp.screens.home.item.HomeScreenItem
 import com.app.alaramapp.screens.setting.AppSettings
 import com.app.alaramapp.screens.setting.SettingsViewModel
+import com.app.alaramapp.ui.theme.AlaramAppTheme
 
 @Composable
 fun HomeScreenNavigation(
@@ -52,14 +55,18 @@ fun HomeScreen(
     onDeleteAlarm: (AlarmEntity) -> Unit = {},
 ) {
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddAlarmClick) {
-                Text("+")
+            FloatingActionButton(
+                onClick = onAddAlarmClick,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ) {
+                Text("+", style = MaterialTheme.typography.headlineSmall)
             }
         }
     ) { padding ->
         if (alarms.isEmpty()) {
-            // Show message when list is empty
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -73,19 +80,18 @@ fun HomeScreen(
                 )
             }
         } else {
-            // Show alarms
             LazyColumn(
                 modifier = Modifier
                     .padding(padding)
                     .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
             ) {
-                items(alarms) {
+                items(alarms) { alarm ->
                     HomeScreenItem(
-                        alarm = it,
-                       // clockStyle = settings.clockStyle,
+                        alarm = alarm,
                         timeFormat24Hour = settings.timeFormat == "24-hour",
-                        onToggle = { onToggleAlarm(it) },
-                        onDelete = { onDeleteAlarm(it) }
+                        onToggle = { onToggleAlarm(alarm) },
+                        onDelete = { onDeleteAlarm(alarm) }
                     )
                 }
             }
@@ -96,21 +102,29 @@ fun HomeScreen(
 
 
 
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 @Preview
 fun HomeScreenPreview(){
-    HomeScreen(onAddAlarmClick = {},
-        alarms = listOf(AlarmEntity(id = 1712, hour = 1579,
-            minute = 1237,
-            isEnabled = false
-        ),
-            AlarmEntity(id = 1712, hour = 1579,
-                minute = 1237,
-                isEnabled = true
+    AlaramAppTheme {
+        HomeScreen(
+            onAddAlarmClick = {},
+            alarms = listOf(
+                AlarmEntity(
+                    id = 1712, hour = 1579,
+                    minute = 1237,
+                    isEnabled = false
+                ),
+                AlarmEntity(
+                    id = 1712, hour = 1579,
+                    minute = 1237,
+                    isEnabled = true
+                ),
             ),
-            ),
-        onToggleAlarm = {},
-        onDeleteAlarm = {},
-        settings = AppSettings(),)
+            onToggleAlarm = {},
+            onDeleteAlarm = {},
+            settings = AppSettings(),
+        )
+    }
 
 }
