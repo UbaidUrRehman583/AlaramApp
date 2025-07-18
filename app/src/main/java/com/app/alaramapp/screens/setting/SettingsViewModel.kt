@@ -39,7 +39,10 @@ class SettingsViewModel @Inject constructor(
 
 
 data class AppSettings(
-    val clockStyle: String = "Digital",
+    //val clockStyle: String = "Digital",
+    val alarmSoundUri: String = "",
+
+
     val alarmSound: String = "Default",
     val snoozeDuration: String = "10 minutes",
     val timeFormat: String = "12-hour",

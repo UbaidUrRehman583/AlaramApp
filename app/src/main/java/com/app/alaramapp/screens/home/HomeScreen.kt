@@ -82,7 +82,7 @@ fun HomeScreen(
                 items(alarms) {
                     HomeScreenItem(
                         alarm = it,
-                        clockStyle = settings.clockStyle,
+                       // clockStyle = settings.clockStyle,
                         timeFormat24Hour = settings.timeFormat == "24-hour",
                         onToggle = { onToggleAlarm(it) },
                         onDelete = { onDeleteAlarm(it) }

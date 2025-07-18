@@ -9,6 +9,7 @@ data class AlarmEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val hour: Int,
     val minute: Int,
+    val soundUri: String="",
     val isEnabled: Boolean = true,
     val isRepeating: Boolean = false,
     val daysOfWeek: List<WeekDay> = emptyList()

@@ -37,7 +37,7 @@ import com.app.alaramapp.data.WeekDay
 fun HomeScreenItem(
     alarm: AlarmEntity,
     timeFormat24Hour: Boolean,
-    clockStyle: String,
+   // clockStyle: String,
     onToggle: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -61,15 +61,20 @@ fun HomeScreenItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            // 🔁 Conditionally display digital or analog
-            if (clockStyle == "Digital") {
+            //  Conditionally display digital or analog
+            Text(
+                text = time,
+                style = MaterialTheme.typography.headlineLarge
+            )
+
+            /*if (clockStyle == "Digital") {
                 Text(
                     text = time,
                     style = MaterialTheme.typography.headlineLarge
                 )
             } else {
                 AnalogClock(hour = alarm.hour, minute = alarm.minute)
-            }
+            }*/
 
             Text(
                 text = alarm.daysOfWeek.joinToString(", ") { it.displayName },
@@ -143,7 +148,7 @@ fun HomeScreenItemPreview() {
             onToggle = {},
             onDelete = {},
             timeFormat24Hour = false,
-            clockStyle = "elit",
+            //clockStyle = "elit",
         )
     }
 }

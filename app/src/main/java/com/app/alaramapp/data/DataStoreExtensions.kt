@@ -23,7 +23,7 @@ object SettingsDataStore {
 
     suspend fun saveSettings(context: Context, settings: AppSettings) {
         context.dataStore.edit {
-            it[CLOCK_STYLE] = settings.clockStyle
+         //   it[CLOCK_STYLE] = settings.clockStyle
             it[ALARM_SOUND] = settings.alarmSound
             it[SNOOZE_DURATION] = settings.snoozeDuration
             it[TIME_FORMAT] = settings.timeFormat
@@ -34,7 +34,7 @@ object SettingsDataStore {
     fun getSettings(context: Context): Flow<AppSettings> {
         return context.dataStore.data.map { prefs ->
             AppSettings(
-                clockStyle = prefs[CLOCK_STYLE] ?: "Digital",
+               // clockStyle = prefs[CLOCK_STYLE] ?: "Digital",
                 alarmSound = prefs[ALARM_SOUND] ?: "Default",
                 snoozeDuration = prefs[SNOOZE_DURATION] ?: "10 minutes",
                 timeFormat = prefs[TIME_FORMAT] ?: "24-hour",

@@ -8,8 +8,8 @@ import com.app.alaramapp.data.AlarmRepository
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.alaramapp.AlarmHelper
 import com.app.alaramapp.data.WeekDay
-import com.app.alaramapp.screens.addalarm.AlarmHelper
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -26,13 +26,14 @@ class HomeViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     var selectedDays = mutableStateListOf<WeekDay>()
 
-    fun toggleDay(day: WeekDay) {
-        if (selectedDays.contains(day)) selectedDays.remove(day)
-        else selectedDays.add(day)
-    }
+
+
+
     fun deleteAlarm(alarm: AlarmEntity) {
         viewModelScope.launch {
             repository.deleteAlarm(alarm)
+            AlarmHelper.stop()
+
         }
     }
 
@@ -44,6 +45,8 @@ class HomeViewModel @Inject constructor(
             }
             else{
                 AlarmHelper.cancelAlarm(context, alarm.id)
+                AlarmHelper.stop()
+
             }
         }
     }
